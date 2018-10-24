@@ -1,0 +1,12 @@
+data.json
+data.txt
+
+# python
+*.pyc
+**/__pycache__
+*.egg-info
+*.egg
+dist/
+.pytest_cache/
+.coverage
+htmlcov/

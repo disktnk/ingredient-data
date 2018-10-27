@@ -42,3 +42,13 @@ $ # show ingredients
 $ ingred-data list p
 $ # show products
 ```
+
+## Make executable file (Windows)
+
+use [PyInstaller](https://www.pyinstaller.org/) (`pip install pyinstaller`)
+
+```bash
+$ pyinstaller src\show.py --name ingred-data -F
+```
+
+`ingred-data.exe` will created at `dist` directory.

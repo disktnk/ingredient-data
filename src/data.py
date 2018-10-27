@@ -1,3 +1,4 @@
+import codecs
 import datetime
 import json
 import os
@@ -22,7 +23,7 @@ def get_data(path):
     mtime = datetime.datetime.fromtimestamp(
         os.path.getmtime(abs_path)).isoformat()
     if os.path.exists(SHAPED_FILE_NAME):
-        with open(SHAPED_FILE_NAME, 'r') as f:
+        with codecs.open(SHAPED_FILE_NAME, 'r', 'utf-8') as f:
             shaped_file = json.load(f)
         if shaped_file['path'] != abs_path:
             need_reload = True
@@ -33,7 +34,7 @@ def get_data(path):
 
     products, ingreds = {}, {}
     if need_reload:
-        with open(abs_path, 'r') as f:
+        with codecs.open(abs_path, 'r', 'utf-8') as f:
             lines = f.readlines()
         item_set = {}
         temp_product = None
@@ -82,10 +83,10 @@ def get_data(path):
         for ingred in ingreds.values():
             i_dict = {'id': ingred.id, 'name': ingred.name}
             data_dict['ingreds'].append(i_dict)
-        with open(SHAPED_FILE_NAME, 'w') as f:
+        with codecs.open(SHAPED_FILE_NAME, 'w', 'utf-8') as f:
             json.dump(data_dict, f, indent=2, ensure_ascii=False)
     else:
-        with open(SHAPED_FILE_NAME, 'r') as f:
+        with codecs.open(SHAPED_FILE_NAME, 'r', 'utf-8') as f:
             shaped_file = json.load(f)
         i_dicts = shaped_file['ingreds']
         for i_dict in i_dicts:

@@ -20,6 +20,8 @@ def regularization(name):
 def get_data(path):
     need_reload = False
     abs_path = os.path.abspath(path)
+    if not os.path.exists(abs_path):
+        raise ValueError('not found data.txt, please put the file')
     mtime = datetime.datetime.fromtimestamp(
         os.path.getmtime(abs_path)).isoformat()
     if os.path.exists(SHAPED_FILE_NAME):

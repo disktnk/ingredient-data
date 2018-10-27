@@ -2,13 +2,15 @@
 
 Collect ingredient and count up each
 
-## Setup module
+## Install
 
 ```bash
 $ git clone https://github.com/disktnk/ingredient-data.git
 $ cd ingredient-data
-$ pip install texttable zenhan
+$ pip install -e .
 ```
+
+enable to run `ingred-data` binary.
 
 ## Prepare data
 
@@ -30,13 +32,13 @@ Components list
 ## Run
 
 ```bash
-$ python show.py -n 20 count
+$ ingred-data -n 20 count
 ```
 
 ```bash
-$ python show.py list i
+$ ingred-data list i
 $ # show ingredients
 
-$ python show.py list p
+$ ingred-data list p
 $ # show products
 ```

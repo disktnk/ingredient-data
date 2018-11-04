@@ -7,14 +7,13 @@ class Product(object):
             self.ingreds = []
         else:
             self.ingreds = ingreds
-        self.ingreds_str = ''
+        self.ingred_names = ''
 
     def add_ingreds(self, ingred_id):
         self.ingreds.append(ingred_id)
 
-    def make_ingreds_list(self, ingreds):
-        ingreds_list = [ingreds[i].name for i in self.ingreds]
-        self.ingreds_str = ','.join(ingreds_list)
+    def make_ingred_names(self, ingreds):
+        self.ingred_names = [ingreds[i].name for i in self.ingreds]
 
 
 class Ingred(object):
@@ -23,11 +22,10 @@ class Ingred(object):
         self.id = id
         self.name = name
         self.products = []
-        self.products_str = ''
+        self.product_names = []
 
     def extend_products(self, product_ids):
         self.products.extend(product_ids)
 
-    def make_products_list(self, products):
-        products_list = [products[i].name for i in self.products]
-        self.products_str = ','.join(products_list)
+    def make_product_names(self, products):
+        self.product_names = [products[i].name for i in self.products]

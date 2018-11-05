@@ -91,12 +91,18 @@ def show(products, ingreds, args):
 def save_excel(products, ingreds, args):
     sorted_ingreds = count_include_in(products, ingreds)
 
-    df = pandas.DataFrame(columns=['Name', 'Num', 'Included'])
+    df_count = pandas.DataFrame(columns=['Name', 'Num', 'Included'])
     for ingred in sorted_ingreds:
-        df.loc[ingred.id] = [ingred.name, len(ingred.products),
-                             ingred.product_names]
+        df_count.loc[ingred.id] = [ingred.name, len(ingred.products),
+                                   ','.join(ingred.product_names)]
 
-    df.to_excel(args.out, sheet_name='count')
+    df_master = pandas.DataFrame(columns=['Name', 'Ingredients'])
+    for p in products.values():
+        df_master.loc[p.id] = [p.name, ','.join(p.ingred_names)]
+
+    with pandas.ExcelWriter(args.out) as w:
+        df_count.to_excel(w, sheet_name='count')
+        df_master.to_excel(w, sheet_name='master')
 
 
 def main():

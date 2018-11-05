@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ingredient-data',
-    version='0.1.1',
+    version='0.2.0',
     description='summarize ingredients tool',
     author='Daisuke Tanaka',
     author_email='duaipp@gmail.com',

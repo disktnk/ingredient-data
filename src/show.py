@@ -1,5 +1,6 @@
 import argparse
 
+import pandas
 import texttable
 
 from src.data import get_data
@@ -11,14 +12,18 @@ def get_formatted_table():
     return table
 
 
-def count(products, ingreds, args):
+def count_include_in(products, ingreds):
     for ingred in ingreds.values():
         p_ids = [p.id for p in products.values() if ingred.id in p.ingreds]
         ingred.extend_products(p_ids)
         ingred.make_product_names(products)
     ingred_list = list(ingreds.values())
-    sorted_ingreds = sorted(
+    return sorted(
         ingred_list, key=lambda ingred: len(ingred.products), reverse=True)
+
+
+def count(products, ingreds, args):
+    sorted_ingreds = count_include_in(products, ingreds)
 
     table = get_formatted_table()
     table.set_cols_dtype(['i', 't', 'i', 't'])
@@ -83,6 +88,17 @@ def show(products, ingreds, args):
         print(table.draw())
 
 
+def save_excel(products, ingreds, args):
+    sorted_ingreds = count_include_in(products, ingreds)
+
+    df = pandas.DataFrame(columns=['Name', 'Num', 'Included'])
+    for ingred in sorted_ingreds:
+        df.loc[ingred.id] = [ingred.name, len(ingred.products),
+                             ingred.product_names]
+
+    df.to_excel(args.out, sheet_name='count')
+
+
 def main():
     parser = argparse.ArgumentParser(description='Count-up ingredient tool')
     parser.add_argument(
@@ -100,6 +116,12 @@ def main():
     parser_list.add_argument(
         '--id', '-i', type=int, default=None, help='id number')
     parser_list.set_defaults(handler=show)
+
+    parser_excel = subparsers.add_parser(
+        'excel', help='Save summary and master as excel')
+    parser_excel.add_argument(
+        '--out', '-o', default='summary.xlsx', help='output file name')
+    parser_excel.set_defaults(handler=save_excel)
 
     args = parser.parse_args()
 

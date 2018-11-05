@@ -1,5 +1,6 @@
 import argparse
 
+import openpyxl  # NOQA: import the module to build up single binary
 import pandas
 import texttable
 
@@ -125,8 +126,9 @@ def main():
 
     parser_excel = subparsers.add_parser(
         'excel', help='Save summary and master as excel')
+    default_xlsx_file_name = 'summary.xlsx'
     parser_excel.add_argument(
-        '--out', '-o', default='summary.xlsx', help='output file name')
+        '--out', '-o', default=default_xlsx_file_name, help='output file name')
     parser_excel.set_defaults(handler=save_excel)
 
     args = parser.parse_args()
@@ -136,7 +138,8 @@ def main():
     if hasattr(args, 'handler'):
         args.handler(*data, args)
     else:
-        parser.print_help()
+        args.out = default_xlsx_file_name
+        save_excel(*data, args)
 
 
 if __name__ == '__main__':

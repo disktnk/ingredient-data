@@ -14,7 +14,9 @@ setup(
     },
     install_requires=[
         'texttable>=1.4.0',
-        'zenhan>=0.5.2'
+        'zenhan>=0.5.2',
+        'pandas>=0.23.4',
+        'openpyxl>=2.5.9'
     ],
     test_require=[],
 )

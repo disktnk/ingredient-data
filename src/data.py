@@ -49,7 +49,7 @@ def get_data(path):
                 # previous product is not recorded
                 p = Product(
                     temp_product.id, temp_product.name, temp_product.ingreds)
-                p.make_ingreds_list(ingreds)
+                p.make_ingred_names(ingreds)
                 products[p.id] = p
                 temp_product = None
                 continue
@@ -73,7 +73,7 @@ def get_data(path):
             # collect last product if remained
             p = Product(
                 temp_product.id, temp_product.name, temp_product.ingreds)
-            p.make_ingreds_list(ingreds)
+            p.make_ingred_names(ingreds)
             products[p.id] = p
 
         data_dict = {
@@ -97,7 +97,7 @@ def get_data(path):
         p_dicts = shaped_file['products']
         for p_dict in p_dicts:
             p = Product(p_dict['id'], p_dict['name'], p_dict['ingreds'])
-            p.make_ingreds_list(ingreds)
+            p.make_ingred_names(ingreds)
             products[p.id] = p
 
     return products, ingreds

@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ingredient-data',
-    version='0.1.1',
+    version='0.2.0',
     description='summarize ingredients tool',
     author='Daisuke Tanaka',
     author_email='duaipp@gmail.com',
@@ -14,7 +14,9 @@ setup(
     },
     install_requires=[
         'texttable>=1.4.0',
-        'zenhan>=0.5.2'
+        'zenhan>=0.5.2',
+        'pandas>=0.23.4',
+        'openpyxl>=2.5.9'
     ],
     test_require=[],
 )

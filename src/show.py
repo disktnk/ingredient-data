@@ -1,5 +1,7 @@
 import argparse
 
+import openpyxl  # NOQA: import the module to build up single binary
+import pandas
 import texttable
 
 from src.data import get_data
@@ -11,14 +13,18 @@ def get_formatted_table():
     return table
 
 
-def count(products, ingreds, args):
+def count_include_in(products, ingreds):
     for ingred in ingreds.values():
         p_ids = [p.id for p in products.values() if ingred.id in p.ingreds]
         ingred.extend_products(p_ids)
-        ingred.make_products_list(products)
+        ingred.make_product_names(products)
     ingred_list = list(ingreds.values())
-    sorted_ingreds = sorted(
+    return sorted(
         ingred_list, key=lambda ingred: len(ingred.products), reverse=True)
+
+
+def count(products, ingreds, args):
+    sorted_ingreds = count_include_in(products, ingreds)
 
     table = get_formatted_table()
     table.set_cols_dtype(['i', 't', 'i', 't'])
@@ -27,7 +33,7 @@ def count(products, ingreds, args):
     for i, ingred in enumerate(sorted_ingreds):
         if args.num >= 0 and i >= args.num:
             break
-        p_list = ingred.products_str
+        p_list = ','.join(ingred.product_names)
         if len(p_list) >= 30:
             p_list = '{}...'.format(p_list[:27])
         table.add_row([ingred.id, ingred.name, len(ingred.products), p_list])
@@ -67,7 +73,7 @@ def show(products, ingreds, args):
                 return
             print('ID: {:d}'.format(product.id))
             print('name: {}'.format(product.name))
-            print('ingredient: {}'.format(product.ingreds_str))
+            print('ingredient: {}'.format(','.join(product.ingred_names)))
             return
         table = get_formatted_table()
         table.set_cols_dtype(['i', 't', 't'])
@@ -76,11 +82,28 @@ def show(products, ingreds, args):
         for i, p in enumerate(products.values()):
             if args.num >= 0 and i >= args.num:
                 break
-            ingred_list = p.ingreds_str
+            ingred_list = ','.join(p.ingred_names)
             if len(ingred_list) >= 30:
                 ingred_list = '{}...'.format(ingred_list[:27])
             table.add_row([p.id, p.name, ingred_list])
         print(table.draw())
+
+
+def save_excel(products, ingreds, args):
+    sorted_ingreds = count_include_in(products, ingreds)
+
+    df_count = pandas.DataFrame(columns=['Name', 'Num', 'Included'])
+    for ingred in sorted_ingreds:
+        df_count.loc[ingred.id] = [ingred.name, len(ingred.products),
+                                   ','.join(ingred.product_names)]
+
+    df_master = pandas.DataFrame(columns=['Name', 'Ingredients'])
+    for p in products.values():
+        df_master.loc[p.id] = [p.name, ','.join(p.ingred_names)]
+
+    with pandas.ExcelWriter(args.out) as w:
+        df_count.to_excel(w, sheet_name='count')
+        df_master.to_excel(w, sheet_name='master')
 
 
 def main():
@@ -101,6 +124,13 @@ def main():
         '--id', '-i', type=int, default=None, help='id number')
     parser_list.set_defaults(handler=show)
 
+    parser_excel = subparsers.add_parser(
+        'excel', help='Save summary and master as excel')
+    default_xlsx_file_name = 'summary.xlsx'
+    parser_excel.add_argument(
+        '--out', '-o', default=default_xlsx_file_name, help='output file name')
+    parser_excel.set_defaults(handler=save_excel)
+
     args = parser.parse_args()
 
     data = get_data(args.data)
@@ -108,7 +138,8 @@ def main():
     if hasattr(args, 'handler'):
         args.handler(*data, args)
     else:
-        parser.print_help()
+        args.out = default_xlsx_file_name
+        save_excel(*data, args)
 
 
 if __name__ == '__main__':
